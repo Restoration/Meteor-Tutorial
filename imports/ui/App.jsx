@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { Tasks } from '../api/tasks.js';
-import ReactDOM from 'react-dom';
 
 const App = (props) => {
   console.log(props)
-
   const [value, setValue] = useState();
   const handleSubmit = () => {
     Tasks.insert({
@@ -15,6 +13,17 @@ const App = (props) => {
     setValue('');
     event.preventDefault();
   }
+
+  const toggleChecked = (task) => {
+    Tasks.update(task._id, {
+      $set: { checked: !task.checked },
+    });
+  }
+
+  const deleteThisTask = (task) => {
+    Tasks.remove(task._id);
+  }
+
   return (
   <div className="container">
     <header>
@@ -29,9 +38,23 @@ const App = (props) => {
       <button onClick={()=> handleSubmit()}>Send</button>
     </form>
     <ul>
-      {props.tasks.map((task) => (
-        <li key={task._id}>{task.text}</li>
-      ))}
+      {props.tasks.map((task, i) => {
+        const taskClassName = task.checked ? 'checked' : '';
+        return (
+          <li key={i} className={taskClassName}>
+            <button className="delete" onClick={ () => deleteThisTask(task)}>
+              &times;
+            </button>
+            <input
+              type="checkbox"
+              readOnly
+              checked={!!task.checked}
+              onClick={() => toggleChecked(task)}
+            />
+            <span className="text">{task.text}</span>
+          </li>
+        )
+      })}
     </ul>
   </div>
   );
