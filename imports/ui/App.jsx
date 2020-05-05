@@ -1,30 +1,24 @@
 import React from 'react';
+import { withTracker } from 'meteor/react-meteor-data';
+import { Tasks } from '../api/tasks.js';
 
-const getTasks = () => {
-  return [
-    { _id: 1, text: 'This is task 1' },
-    { _id: 2, text: 'This is task 2' },
-    { _id: 3, text: 'This is task 3' },
-  ];
-}
-
-const Tasks = () => {
-  return (
-    <ul>
-      {getTasks().map((task) => (
-        <li key={task._id}>{task.text}</li>
-      ))}
-    </ul>
-  )
-}
-
-export const App = () => {
+const App = (props) => {
+  console.log(props)
   return (
   <div className="container">
     <header>
       <h1>Todo List</h1>
     </header>
-    <Tasks />
+    <ul>
+      {props.tasks.map((task) => (
+        <li key={task._id}>{task.text}</li>
+      ))}
+    </ul>
   </div>
   );
 }
+export default withTracker(() => {
+  return {
+    tasks: Tasks.find({}).fetch(),
+  };
+})(App);
